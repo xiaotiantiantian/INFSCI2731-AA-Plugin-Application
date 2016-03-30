@@ -1,1 +1,1 @@
-# Login-And-Authentication-Plug-In-Application
+# INFSCI2731-AA-Plugin-Application
