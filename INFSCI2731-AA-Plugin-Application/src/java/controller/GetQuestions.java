@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author shao dai
  */
 @WebServlet(name = "securityquestions", urlPatterns = {"/securityquestions"})
-public class securityquestions extends HttpServlet {
+public class GetQuestions extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,6 +33,12 @@ public class securityquestions extends HttpServlet {
             throws ServletException, IOException {
         
         String email = request.getParameter("email");
+        
+        //Check if email exists
+        //if not exists -> redirect back to forgotpassword.jsp with Try count
+        //if exists -> redirect to questions.jsp with email
+        
+        
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
