@@ -13,7 +13,7 @@
     </head>
     <body>
         <h1>Reset Password</h1>
-        <form name="resetform-email" method="POST" action="securityquestions">
+        <form name="resetform-email" method="POST" action="GetQuestions">
             Enter your email: <input name="email" type="email" /> 
             <input type="submit" value="Submit" />
         </form>
