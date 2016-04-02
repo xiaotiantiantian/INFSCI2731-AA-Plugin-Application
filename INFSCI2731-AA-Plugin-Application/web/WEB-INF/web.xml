@@ -8,6 +8,22 @@
         <servlet-name>Test</servlet-name>
         <url-pattern>/Test</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>forgotpassword</servlet-name>
+        <jsp-file>/forgotpassword.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>forgotpassword</servlet-name>
+        <url-pattern>/forgotpassword</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>securityquestions</servlet-name>
+        <servlet-class>controller.securityquestions</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>securityquestions</servlet-name>
+        <url-pattern>/securityquestions</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>120</session-timeout>
     </session-config>
