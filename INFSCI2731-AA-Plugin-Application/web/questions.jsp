@@ -13,5 +13,12 @@
     </head>
     <body>
         <h1>Security Questions</h1>
+        <p>Please answer this security question to continue</p>
+        <form name="resetform-question" method="POST" action="">
+            <div>${requestScope.question}</div>
+            <input type=hidden name="questionid" value="${requestScope.question_id}">
+            <input placeholder="Your answer" />
+            <input type="submit">
+        </form>
     </body>
 </html>

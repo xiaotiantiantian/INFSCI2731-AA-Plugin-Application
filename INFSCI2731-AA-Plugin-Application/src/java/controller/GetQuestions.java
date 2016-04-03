@@ -13,6 +13,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import DbConnect.DbConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import javax.servlet.RequestDispatcher;
+
 /**
  *
  * @author shao dai
@@ -36,24 +48,79 @@ public class GetQuestions extends HttpServlet {
         
         //Check if email exists
         //if not exists -> redirect back to forgotpassword.jsp with Try count
-        //if exists -> redirect to questions.jsp with email
+        //if exists -> get questions -> redirect with questions and question ids
+        String account_info_id = getIDFromEmailSQL(email);
         
-        
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet securityquestions</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet securityquestions at " + request.getContextPath() + "</h1>");
-            out.println("<p>The email entered is " + email + "</p>");
-            out.println("</body>");
-            out.println("</html>");
+        if (account_info_id.equals("")) { //if no match
+            response.sendRedirect("forgotpassword.jsp");
+        } else {
+            String[] questions = getQuestionsFromIDSQL(account_info_id);
+            if (questions != null) {
+                request.setAttribute("question_id", questions[0]);
+                request.setAttribute("question", questions[1]);
+                RequestDispatcher rd = request.getRequestDispatcher("questions.jsp");
+                rd.forward(request, response);
+            } else {
+                //response.sendRedirect("forgotpassword.jsp");
+            }
         }
+    
     }
+    
+    protected String getIDFromEmailSQL(String email) {
+        Connection connection;
+        PreparedStatement preparedStatement;
+        
+        try {
+            connection = DbConnection.getConnection();
+            String selectSQL = "SELECT id FROM INFSCI2731.account_info WHERE email_addr = ?";
+            preparedStatement = connection.prepareStatement(selectSQL);  
+            preparedStatement.setString(1, email);
+            
+            ResultSet rs = preparedStatement.executeQuery();
+            
+            boolean val = rs.next();
+            if (!val) {
+                return "";
+            } else {
+                return rs.getString("id"); 
+            }
+  
+        } catch (SQLException e) {
+                e.printStackTrace();
+                return "";
+        }   
+    }
+    
+    protected String[] getQuestionsFromIDSQL(String account_info_id) {
+        Connection connection;
+        PreparedStatement preparedStatement;
+        
+        try {
+            connection = DbConnection.getConnection();
+            String selectSQL = "SELECT security_question.question, security_question_answer.id FROM security_question, security_question_answer WHERE security_question_answer.security_question_id = security_question.id AND security_question_answer.account_info_id = ? ORDER BY RAND() LIMIT 0,1;";
+            preparedStatement = connection.prepareStatement(selectSQL);  
+            preparedStatement.setString(1, account_info_id);
+            
+            ResultSet rs = preparedStatement.executeQuery();
+            
+            boolean val = rs.next();
+            if (!val) {
+                return null;
+            } else {
+                String[] questions = new String[2];
+                questions[0] = rs.getString("security_question_answer.id");
+                questions[1] = rs.getString("security_question.question");
+                return questions;
+            }
+           
+  
+        } catch (SQLException e) {
+                e.printStackTrace();
+                return null;
+        } 
+    }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
