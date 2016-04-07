@@ -6,7 +6,6 @@
 package controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,12 +17,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpSession;
+
+import model.ResetPasswordObj;
 
 /**
  *
@@ -32,6 +29,9 @@ import javax.servlet.RequestDispatcher;
 @WebServlet(name = "securityquestions", urlPatterns = {"/securityquestions"})
 public class GetQuestions extends HttpServlet {
 
+    
+    private final int MAX_EMAIL_ATTEMPTS = 5;
+    private final String SYSTEM_SOURCE = "EmailForm";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,30 +44,67 @@ public class GetQuestions extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        String email = request.getParameter("email");
+        HttpSession session = request.getSession(false);
+        int emailAttempts = 0;
+        String emailString = "";
         
-        //Check if email exists
-        //if not exists -> redirect back to forgotpassword.jsp with Try count
-        //if exists -> get questions -> redirect with questions and question ids
-        String account_info_id = getIDFromEmailSQL(email);
-        
-        if (account_info_id.equals("")) { //if no match
-            response.sendRedirect("forgotpassword.jsp");
-        } else {
-            String[] questions = getQuestionsFromIDSQL(account_info_id);
-            if (questions != null) {
-                request.setAttribute("question_id", questions[0]);
-                request.setAttribute("question", questions[1]);
-                RequestDispatcher rd = request.getRequestDispatcher("questions.jsp");
-                rd.forward(request, response);
-            } else {
-                //response.sendRedirect("forgotpassword.jsp");
+        if (session == null) { //No session yet
+            session = request.getSession();
+            session.setAttribute("emailAttempts", emailAttempts);
+            session.setAttribute("emailString", emailString);
+        } else { //Session already created
+            if (session.getAttribute("emailAttempts") != null) {
+                emailAttempts = (Integer)session.getAttribute("emailAttempts");
+            } 
+            if (session.getAttribute("emailString") != null) {
+                emailString = (String)session.getAttribute("emailString");
             }
+        }  
+        
+        if(emailAttempts > MAX_EMAIL_ATTEMPTS) {
+            String ipAddress = request.getHeader("X-FORWARDED-FOR");
+            // if ip behind proxy
+            if (ipAddress == null) {  
+                    ipAddress = request.getRemoteAddr();  
+            }
+            //Hostile module redirect or object
+            //hostile(emailAttempts, ipAddress, SYSTEM_SOURCE);
+            response.sendRedirect("hostile");
+        } else {
+            String email = request.getParameter("email");
+            //Check if email exists
+            //if not exists -> redirect back to forgotpassword.jsp
+            //if exists -> get questions -> redirect with questions and question ids
+            String account_info_id = getIDFromEmailDB(email);
+
+            if (account_info_id.equals("")) { //if no email match
+                emailAttempts++;
+                emailString += email + ":" + SYSTEM_SOURCE + ";";
+                
+                session.setAttribute("emailAttempts", emailAttempts);       
+                session.setAttribute("emailString", emailString);
+                
+                response.sendRedirect("forgotpassword");
+            } else {
+                String[] questions = getQuestionsFromIDDB(account_info_id);
+                if (questions != null) {
+                    // reset the session on success
+                    session.invalidate();
+                    session = request.getSession();
+                    ResetPasswordObj resetPasswordObj = new ResetPasswordObj(account_info_id, questions[0], questions[1]);
+                    session.setAttribute("resetPasswordObj", resetPasswordObj);
+                    request.setAttribute("question_string", questions[1]);
+                    RequestDispatcher rd = request.getRequestDispatcher("questions");
+                    rd.forward(request, response);
+                } else {
+                    //error
+                }
+            }  
         }
     
     }
     
-    protected String getIDFromEmailSQL(String email) {
+    protected String getIDFromEmailDB(String email) {
         Connection connection;
         PreparedStatement preparedStatement;
         
@@ -92,7 +129,7 @@ public class GetQuestions extends HttpServlet {
         }   
     }
     
-    protected String[] getQuestionsFromIDSQL(String account_info_id) {
+    protected String[] getQuestionsFromIDDB(String account_info_id) {
         Connection connection;
         PreparedStatement preparedStatement;
         

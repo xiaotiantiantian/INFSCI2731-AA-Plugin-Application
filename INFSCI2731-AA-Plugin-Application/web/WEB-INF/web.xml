@@ -17,12 +17,36 @@
         <url-pattern>/forgotpassword</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>questions</servlet-name>
+        <jsp-file>/questions.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>questions</servlet-name>
+        <url-pattern>/questions</url-pattern>
+    </servlet-mapping>
+     <servlet>
+        <servlet-name>resetpassword</servlet-name>
+        <jsp-file>/resetpassword.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>resetpassword</servlet-name>
+        <url-pattern>/resetpassword</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>GetQuestions</servlet-name>
         <servlet-class>controller.GetQuestions</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GetQuestions</servlet-name>
         <url-pattern>/GetQuestions</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>AnswerQuestions</servlet-name>
+        <servlet-class>controller.AnswerQuestions</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AnswerQuestions</servlet-name>
+        <url-pattern>/AnswerQuestions</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>120</session-timeout>

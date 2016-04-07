@@ -5,6 +5,11 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% 
+    if(session.getAttribute("resetPasswordObj") == null) {
+        response.sendRedirect("login.jsp");
+    }
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,10 +19,12 @@
     <body>
         <h1>Security Questions</h1>
         <p>Please answer this security question to continue</p>
-        <form name="resetform-question" method="POST" action="">
-            <div>${requestScope.question}</div>
-            <input type=hidden name="questionid" value="${requestScope.question_id}">
-            <input placeholder="Your answer" />
+        <% if (session.getAttribute("questionAttempts") != null && (Integer)session.getAttribute("questionAttempts") > 0) { %>
+        <p>Your supplied answer does not match our records</p>
+        <% } %>
+        <form name="resetform-question" method="POST" action="AnswerQuestions">
+            <div>${requestScope.question_string}</div>
+            <input name="security_answer" placeholder="Your answer" />
             <input type="submit">
         </form>
     </body>

@@ -13,6 +13,9 @@
     </head>
     <body>
         <h1>Reset Password</h1>
+        <% if (session.getAttribute("emailAttempts") != null && (Integer)session.getAttribute("emailAttempts") > 0) { %>
+        <p>That username does not exist</p>
+        <% } %>
         <form name="resetform-email" method="POST" action="GetQuestions">
             Enter your email: <input name="email" type="email" /> 
             <input type="submit" value="Submit" />
