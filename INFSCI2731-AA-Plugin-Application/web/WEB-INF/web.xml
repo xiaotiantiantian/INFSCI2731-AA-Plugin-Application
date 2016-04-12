@@ -4,6 +4,10 @@
         <servlet-name>Test</servlet-name>
         <servlet-class>controller.Test</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Hostile</servlet-name>
+        <servlet-class>controller.Hostile</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Test</servlet-name>
         <url-pattern>/Test</url-pattern>
@@ -24,7 +28,7 @@
         <servlet-name>questions</servlet-name>
         <url-pattern>/questions</url-pattern>
     </servlet-mapping>
-     <servlet>
+    <servlet>
         <servlet-name>resetpassword</servlet-name>
         <jsp-file>/resetpassword.jsp</jsp-file>
     </servlet>
@@ -47,6 +51,10 @@
     <servlet-mapping>
         <servlet-name>AnswerQuestions</servlet-name>
         <url-pattern>/AnswerQuestions</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Hostile</servlet-name>
+        <url-pattern>/Hostile</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>120</session-timeout>
