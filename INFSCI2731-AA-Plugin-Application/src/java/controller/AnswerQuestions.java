@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import model.ResetPasswordObj;
 
+import controller.Hostile;
+
 /**
  *
  * @author shaoNPC
@@ -69,8 +71,10 @@ public class AnswerQuestions extends HttpServlet {
             if (ipAddress == null) {  
                     ipAddress = request.getRemoteAddr();  
             }
-            //hostile(questionAttempts, ipAddress, SYSTEM_SOURCE);
-            response.sendRedirect("hostile");
+            //Hostile(questionAttempts, ipAddress, SYSTEM_SOURCE);
+            Hostile hostile = new Hostile(questionAttempts,ipAddress, SYSTEM_SOURCE);
+            
+            response.sendRedirect("hostile.jsp");
         } else {
             String securityAnswer = request.getParameter("security_answer");
             ResetPasswordObj resetPasswordObj = (ResetPasswordObj)session.getAttribute("resetPasswordObj"); 
